@@ -1,4 +1,4 @@
-package com.amb.stockmanagerapp
+package com.amb.stockmanagerapp.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,37 +11,35 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.amb.stockmanagerapp.ui.theme.StockManagerAppTheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.amb.stockmanagerapp.presentation.ui.theme.StockManagerAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class StockActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             StockManagerAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    val viewModel = hiltViewModel<StockViewModel>()
+                    val state = viewModel.viewState.value
+                    StockScreen(modifier = Modifier.padding(innerPadding), state)
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    StockManagerAppTheme {
-        Greeting("Android")
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview() {
+        StockManagerAppTheme {
+            StockScreen(
+                state = StockViewState(
+                    isLoading = true
+                )
+            )
+        }
     }
 }

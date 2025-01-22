@@ -1,4 +1,4 @@
-package com.amb.stockmanagerapp.ui.theme
+package com.amb.stockmanagerapp.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
