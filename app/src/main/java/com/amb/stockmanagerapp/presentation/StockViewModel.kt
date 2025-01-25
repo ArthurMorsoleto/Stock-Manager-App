@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.amb.stockmanagerapp.domain.usecase.GetProductsUseCase
 import com.amb.stockmanagerapp.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +43,6 @@ class StockViewModel @Inject constructor(
                     is Response.Loading -> {
                         StockViewState(isLoading = true)
                     }
-
                 }
             }
         }
