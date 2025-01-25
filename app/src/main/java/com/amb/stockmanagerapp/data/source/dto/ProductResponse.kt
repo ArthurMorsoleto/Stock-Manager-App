@@ -1,6 +1,7 @@
 package com.amb.stockmanagerapp.data.source.dto
 
 import com.amb.stockmanagerapp.domain.model.Product
+import com.amb.stockmanagerapp.domain.model.Rating
 import com.google.gson.annotations.SerializedName
 
 data class ProductResponse(
@@ -20,6 +21,13 @@ data class ProductResponse(
     val title: String
 )
 
+data class RatingResponse(
+    @SerializedName("count")
+    val count: Int,
+    @SerializedName("rate")
+    val rate: Double
+)
+
 fun ProductResponse.mapToProduct(): Product {
     return Product(
         id = id,
@@ -27,6 +35,6 @@ fun ProductResponse.mapToProduct(): Product {
         price = price,
         description = description,
         image = image,
-        quantity = rating.count
+        rating = Rating(count = rating.count, rate = rating.rate)
     )
 }
