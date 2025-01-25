@@ -44,7 +44,6 @@ class StockViewModel @Inject constructor(
                     is Response.Loading -> {
                         StockViewState(isLoading = true)
                     }
-
                 }
             }
         }
