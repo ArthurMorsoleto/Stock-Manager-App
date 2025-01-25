@@ -1,5 +1,6 @@
 package com.amb.stockmanagerapp.di
 
+import com.amb.stockmanagerapp.data.local.ProductsDao
 import com.amb.stockmanagerapp.data.remote.ProductsApi
 import com.amb.stockmanagerapp.data.repository.StockRepositoryImpl
 import com.amb.stockmanagerapp.domain.repository.StockRepository
@@ -10,10 +11,17 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object StockModule {
+object StockRepositoryModule {
 
     @Provides
-    fun provideStockRepository(api: ProductsApi): StockRepository {
-        return StockRepositoryImpl(api)
+    fun provideStockRepository(
+        remoteDataSource: ProductsApi,
+        localDataSource: ProductsDao
+    ): StockRepository {
+        return StockRepositoryImpl(
+            remoteDataSource,
+            localDataSource,
+            shouldFetchDataFromRemoteDataSource = false
+        )
     }
 }

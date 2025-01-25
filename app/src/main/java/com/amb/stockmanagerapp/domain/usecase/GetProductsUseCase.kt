@@ -1,6 +1,6 @@
 package com.amb.stockmanagerapp.domain.usecase
 
-import com.amb.stockmanagerapp.data.source.dto.mapToProduct
+import com.amb.stockmanagerapp.data.dto.mapToProduct
 import com.amb.stockmanagerapp.domain.model.Product
 import com.amb.stockmanagerapp.domain.repository.StockRepository
 import com.amb.stockmanagerapp.utils.Response

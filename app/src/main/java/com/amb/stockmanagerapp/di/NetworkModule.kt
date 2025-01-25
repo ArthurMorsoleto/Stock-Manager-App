@@ -9,29 +9,29 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private fun provideHttpClient(): OkHttpClient {
+    @Provides
+    @Singleton
+    fun provideRetrofit(): ProductsApi {
+        return Retrofit.Builder()
+            .baseUrl(PRODUCTS_API_BASE_URL)
+            .client(buildOkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ProductsApi::class.java)
+    }
+
+    private fun buildOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(20, TimeUnit.SECONDS)
             .connectTimeout(20, TimeUnit.SECONDS)
             .build()
     }
-
-    @Provides
-    fun provideRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(PRODUCTS_API_BASE_URL)
-            .client(provideHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-    @Provides
-    fun provideProductsApi(retrofit: Retrofit) = retrofit.create(ProductsApi::class.java)
 
     private const val PRODUCTS_API_BASE_URL = "https://fakestoreapi.com/"
 }
