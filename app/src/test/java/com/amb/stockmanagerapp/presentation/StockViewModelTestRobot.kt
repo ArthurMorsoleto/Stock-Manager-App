@@ -1,11 +1,13 @@
 package com.amb.stockmanagerapp.presentation
 
 import com.amb.stockmanagerapp.domain.model.Product
+import com.amb.stockmanagerapp.domain.model.Rating
 import com.amb.stockmanagerapp.domain.usecase.GetProductsUseCase
 import com.amb.stockmanagerapp.utils.Response
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.flow
 
 object StockViewModelTestRobot {
@@ -20,15 +22,15 @@ object StockViewModelTestRobot {
             description = "descrição do produto 1",
             image = "image 1",
             price = 5.0,
-            quantity = 3
+            rating = Rating(3, 3.4)
         ),
         Product(
             id = 2,
             name = "nome do produto 3",
             description = "descrição do produto 3",
             image = "image 2",
-            price = 5.0,
-            quantity = 3
+            price = 10.0,
+            rating = Rating(3, 3.4)
         )
     )
 
@@ -51,8 +53,16 @@ object StockViewModelTestRobot {
     }
 
     class Act {
-        fun callGetProducts() {
+        fun initViewModel() {
             subject = StockViewModel(useCase)
+        }
+
+        fun callOnPriceSortClick() {
+            subject.onPriceSortClick()
+        }
+
+        fun callOnNameSortClick() {
+            subject.onNameSortClick()
         }
     }
 
@@ -67,6 +77,30 @@ object StockViewModelTestRobot {
 
         fun verifyErrorViewState() {
             assertEquals("error", subject.viewState.value.error)
+        }
+
+        fun verifyIfListIsSortedByPrice() {
+            val firstPrice = subject.viewState.value.data.first().price
+            val secondPrice = subject.viewState.value.data.last().price
+            assertTrue(secondPrice > firstPrice)
+        }
+
+        fun verifyIfListIsSortedByDescendingPrice() {
+            val firstPrice = subject.viewState.value.data.first().price
+            val secondPrice = subject.viewState.value.data.last().price
+            assertTrue(firstPrice > secondPrice)
+        }
+
+        fun verifyIfListIsSortedByName() {
+            val firstName = subject.viewState.value.data.first().name
+            val secondName = subject.viewState.value.data.last().name
+            assertTrue(firstName < secondName)
+        }
+
+        fun verifyIfListIsSortedByDescendingName() {
+            val firstName = subject.viewState.value.data.first().name
+            val secondName = subject.viewState.value.data.last().name
+            assertTrue(firstName > secondName)
         }
     }
 }
