@@ -30,7 +30,7 @@ class StockViewModelTest {
             StockViewModelTestRobot.run {
                 arrange { mockGetProductsLoading() }
                 act {
-                    callGetProducts()
+                    initViewModel()
                     advanceUntilIdle()
                 }
                 assert { verifyLoadingViewState() }
@@ -43,7 +43,7 @@ class StockViewModelTest {
             StockViewModelTestRobot.run {
                 arrange { mockGetProductsSuccess() }
                 act {
-                    callGetProducts()
+                    initViewModel()
                     advanceUntilIdle()
                 }
                 assert { verifySuccessViewState() }
@@ -56,10 +56,44 @@ class StockViewModelTest {
             StockViewModelTestRobot.run {
                 arrange { mockGetProductsError() }
                 act {
-                    callGetProducts()
+                    initViewModel()
                     advanceUntilIdle()
                 }
                 assert { verifyErrorViewState() }
             }
         }
+
+    @Test
+    fun `when on price sort is called then should update sort option from products data`() {
+        runTest {
+            StockViewModelTestRobot.run {
+                arrange { mockGetProductsSuccess() }
+                act {
+                    initViewModel()
+                    advanceUntilIdle()
+                    callOnPriceSortClick()
+                }
+                assert { verifyIfListIsSortedByPrice() }
+                act { callOnPriceSortClick() }
+                assert { verifyIfListIsSortedByDescendingPrice() }
+            }
+        }
+    }
+
+    @Test
+    fun `when on name sort is called then should update sort option from products data`() {
+        runTest {
+            StockViewModelTestRobot.run {
+                arrange { mockGetProductsSuccess() }
+                act {
+                    initViewModel()
+                    advanceUntilIdle()
+                    callOnNameSortClick()
+                }
+                assert { verifyIfListIsSortedByName() }
+                act { callOnNameSortClick() }
+                assert { verifyIfListIsSortedByDescendingName() }
+            }
+        }
+    }
 }

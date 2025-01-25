@@ -1,4 +1,4 @@
-package com.amb.stockmanagerapp.data.source.dto
+package com.amb.stockmanagerapp.data.dto
 
 import com.amb.stockmanagerapp.domain.model.Product
 import com.amb.stockmanagerapp.domain.model.Rating
@@ -36,5 +36,18 @@ fun ProductResponse.mapToProduct(): Product {
         description = description,
         image = image,
         rating = Rating(count = rating.count, rate = rating.rate)
+    )
+}
+
+fun ProductResponse.mapToLocalProductResponse(): LocalProductResponse {
+    return LocalProductResponse(
+        id = id,
+        title = title,
+        price = price,
+        description = description,
+        image = image,
+        category = category,
+        rate = rating.rate,
+        rateCount = rating.count
     )
 }
