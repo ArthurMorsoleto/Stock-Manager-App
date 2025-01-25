@@ -1,4 +1,4 @@
-package com.amb.stockmanagerapp.ui.theme
+package com.amb.stockmanagerapp.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
