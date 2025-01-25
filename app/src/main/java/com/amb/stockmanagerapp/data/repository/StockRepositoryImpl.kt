@@ -9,6 +9,7 @@ class StockRepositoryImpl(
 ) : StockRepository {
 
     override suspend fun getStockProducts(): List<ProductResponse> {
+        // TODO persistence data
         return api.getProducts()
     }
 }
