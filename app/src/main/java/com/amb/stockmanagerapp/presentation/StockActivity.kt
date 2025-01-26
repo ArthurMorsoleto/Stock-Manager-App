@@ -14,16 +14,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,8 +47,7 @@ class StockActivity : ComponentActivity() {
         setContent {
             StockManagerAppTheme {
                 Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     val viewModel = hiltViewModel<StockViewModel>()
                     val state = viewModel.viewState.collectAsState().value
@@ -52,6 +58,9 @@ class StockActivity : ComponentActivity() {
                         Modifier.padding(innerPadding)
                     ) {
                         Title()
+                        FilterProducts {
+                            viewModel.onFilterUpdate(it)
+                        }
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.CenterEnd,
@@ -78,10 +87,31 @@ class StockActivity : ComponentActivity() {
             modifier = Modifier.padding(start = 16.dp, top = 24.dp),
             text = "Stock",
             style = TextStyle(
-                fontSize = 20.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Normal
             )
+        )
+    }
+
+    @Composable
+    fun FilterProducts(onTextChange: (String) -> Unit) {
+        var mutableText by remember { mutableStateOf(TextFieldValue("")) }
+        return OutlinedTextField(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            value = mutableText,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null
+                )
+            },
+            onValueChange = {
+                mutableText = it
+                onTextChange.invoke(mutableText.text)
+            }
         )
     }
 
