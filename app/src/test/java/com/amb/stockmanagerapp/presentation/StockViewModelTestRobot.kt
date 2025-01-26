@@ -64,6 +64,10 @@ object StockViewModelTestRobot {
         fun callOnNameSortClick() {
             subject.onNameSortClick()
         }
+
+        fun callFilter() {
+            subject.onFilterUpdate("produto 3")
+        }
     }
 
     class Assert {
@@ -101,6 +105,10 @@ object StockViewModelTestRobot {
             val firstName = subject.viewState.value.data.first().name
             val secondName = subject.viewState.value.data.last().name
             assertTrue(firstName > secondName)
+        }
+
+        fun checkFilteredItems() {
+            assertEquals(1, subject.viewState.value.data.size)
         }
     }
 }

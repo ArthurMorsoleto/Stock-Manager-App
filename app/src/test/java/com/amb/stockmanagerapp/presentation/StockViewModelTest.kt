@@ -96,4 +96,19 @@ class StockViewModelTest {
             }
         }
     }
+
+    @Test
+    fun testFilter()= runTest{
+        StockViewModelTestRobot.apply {
+            arrange { mockGetProductsSuccess() }
+            act {
+                initViewModel()
+                advanceUntilIdle()
+                callFilter()
+            }
+            assert {
+                checkFilteredItems()
+            }
+        }
+    }
 }
