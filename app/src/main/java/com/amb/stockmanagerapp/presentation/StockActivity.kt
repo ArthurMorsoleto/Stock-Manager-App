@@ -58,9 +58,7 @@ class StockActivity : ComponentActivity() {
                         Modifier.padding(innerPadding)
                     ) {
                         Title()
-                        FilterProducts {
-                            viewModel.onFilterUpdate(it)
-                        }
+                        Filter { viewModel.onFilterUpdate(it) }
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.CenterEnd,
@@ -95,7 +93,7 @@ class StockActivity : ComponentActivity() {
     }
 
     @Composable
-    fun FilterProducts(onTextChange: (String) -> Unit) {
+    fun Filter(onTextChange: (String) -> Unit) {
         var mutableText by remember { mutableStateOf(TextFieldValue("")) }
         return OutlinedTextField(
             modifier = Modifier
