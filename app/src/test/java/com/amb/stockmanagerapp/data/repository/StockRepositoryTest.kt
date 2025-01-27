@@ -71,7 +71,8 @@ class StockRepositoryTest {
         subject = StockRepositoryImpl(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
-            shouldFetchDataFromRemoteDataSource = false
+            shouldFetchDataFromRemoteDataSource = false,
+            dispatcher = Dispatchers.IO
         )
         val response = subject.getStockProducts()
 
@@ -89,12 +90,27 @@ class StockRepositoryTest {
         subject = StockRepositoryImpl(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
-            shouldFetchDataFromRemoteDataSource = true
+            shouldFetchDataFromRemoteDataSource = true,
+            dispatcher = Dispatchers.IO
         )
         val response = subject.getStockProducts()
 
         assertEquals(1, response.size)
         coVerify(exactly = 1) { localDataSource.upsertAll(any()) }
         coVerify(exactly = 1) { remoteDataSource.getProducts() }
+    }
+
+    @Test
+    fun testGetProductDetails() = runTest {
+        coEvery { localDataSource.getById(any()) } returns fakeLocalResponse.first()
+
+        subject = StockRepositoryImpl(
+            localDataSource = localDataSource,
+            remoteDataSource = remoteDataSource,
+            shouldFetchDataFromRemoteDataSource = true,
+            dispatcher = Dispatchers.IO
+        )
+        val response = subject.getProductDetails(1)
+        assertEquals("title", response?.title)
     }
 }
