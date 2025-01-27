@@ -11,6 +11,9 @@ interface ProductsDao {
     @Query("SELECT * FROM productResponse")
     suspend fun getAll(): List<LocalProductResponse>
 
+    @Query("SELECT * FROM productResponse WHERE id = :productId")
+    suspend fun getById(productId: Int): LocalProductResponse?
+
     @Upsert
     suspend fun upsert(product: LocalProductResponse)
 

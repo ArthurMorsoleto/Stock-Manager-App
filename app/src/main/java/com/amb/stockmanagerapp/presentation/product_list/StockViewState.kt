@@ -1,4 +1,4 @@
-package com.amb.stockmanagerapp.presentation
+package com.amb.stockmanagerapp.presentation.product_list
 
 import com.amb.stockmanagerapp.domain.model.Product
 

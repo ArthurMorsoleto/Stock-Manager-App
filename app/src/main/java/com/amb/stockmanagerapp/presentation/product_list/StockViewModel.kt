@@ -1,4 +1,4 @@
-package com.amb.stockmanagerapp.presentation
+package com.amb.stockmanagerapp.presentation.product_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
