@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.amb.stockmanagerapp.presentation.Screen
 import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetails
 import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetailsViewModel
+import com.amb.stockmanagerapp.presentation.product_edit.ProductEditScreen
 import com.amb.stockmanagerapp.presentation.ui.theme.StockManagerAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,7 +72,28 @@ class StockActivity : ComponentActivity() {
                             Column(
                                 Modifier.padding(innerPadding)
                             ) {
-                                Title()
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 24.dp),
+                                ) {
+                                    Title(
+                                        modifier = Modifier
+                                            .padding(start = 16.dp)
+                                            .align(Alignment.CenterStart)
+                                    )
+                                    IconButton(
+                                        modifier = Modifier.align(Alignment.BottomEnd),
+                                        onClick = {
+                                            navController.navigate(Screen.ProductEdit.route)
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.AddCircle,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
                                 Filter { viewModel.onFilterUpdate(it) }
                                 Box(
                                     modifier = Modifier.fillMaxWidth(),
@@ -95,6 +119,9 @@ class StockActivity : ComponentActivity() {
                             val state = viewModel.viewState.collectAsState().value
                             ProductDetails(navController, state)
                         }
+                        composable(route = Screen.ProductEdit.route) {
+                            ProductEditScreen(navController)
+                        }
                     }
                 }
             }
@@ -102,9 +129,9 @@ class StockActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Title() {
+    private fun Title(modifier: Modifier) {
         Text(
-            modifier = Modifier.padding(start = 16.dp, top = 24.dp),
+            modifier = modifier,
             text = "Stock",
             style = TextStyle(
                 fontSize = 28.sp,
