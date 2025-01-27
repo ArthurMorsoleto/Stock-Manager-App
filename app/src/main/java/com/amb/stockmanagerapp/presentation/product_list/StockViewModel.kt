@@ -20,12 +20,6 @@ class StockViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(StockViewState())
     val viewState = _viewState.asStateFlow()
 
-    private val _priceSorter = MutableStateFlow(true)
-    val priceSorter = _priceSorter.asStateFlow()
-
-    private val _nameSorter = MutableStateFlow(true)
-    val nameSorter = _nameSorter.asStateFlow()
-
     private var products: List<Product> = listOf()
 
     init {
@@ -60,29 +54,29 @@ class StockViewModel @Inject constructor(
     }
 
     fun onPriceSortClick() {
-        _priceSorter.update { it.not() }
-        _viewState.update { value ->
-            value.copy(
+        _viewState.update { state ->
+            state.copy(
                 isLoading = false,
-                data = if (_priceSorter.value) {
-                    value.data.sortedByDescending { it.price }
+                data = if (state.priceSorter) {
+                    state.data.sortedBy { it.price }
                 } else {
-                    value.data.sortedBy { it.price }
-                }
+                    state.data.sortedByDescending { it.price }
+                },
+                priceSorter = state.priceSorter.not()
             )
         }
     }
 
     fun onNameSortClick() {
-        _nameSorter.update { it.not() }
-        _viewState.update { value ->
-            value.copy(
+        _viewState.update { state ->
+            state.copy(
                 isLoading = false,
-                data = if (_nameSorter.value) {
-                    value.data.sortedByDescending { it.name }
+                data = if (state.nameSorter) {
+                    state.data.sortedBy { it.name }
                 } else {
-                    value.data.sortedBy { it.name }
-                }
+                    state.data.sortedByDescending { it.name }
+                },
+                nameSorter = state.nameSorter.not()
             )
         }
     }

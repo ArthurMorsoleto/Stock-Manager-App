@@ -5,5 +5,7 @@ import com.amb.stockmanagerapp.domain.model.Product
 data class StockViewState(
     val isLoading: Boolean = true,
     val data: List<Product> = emptyList(),
-    val error: String = ""
+    val error: String = "",
+    val nameSorter: Boolean = false,
+    val priceSorter: Boolean = false
 )

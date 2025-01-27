@@ -63,11 +63,8 @@ class StockActivity : ComponentActivity() {
                         startDestination = Screen.ProductList.route
                     ) {
                         composable(route = Screen.ProductList.route) {
-
                             val viewModel = hiltViewModel<StockViewModel>()
                             val state = viewModel.viewState.collectAsState().value
-                            val priceSorter = viewModel.priceSorter.collectAsState().value
-                            val nameSorter = viewModel.nameSorter.collectAsState().value
 
                             Column(
                                 Modifier.padding(innerPadding)
@@ -79,10 +76,10 @@ class StockActivity : ComponentActivity() {
                                     contentAlignment = Alignment.CenterEnd,
                                 ) {
                                     Row {
-                                        SortBox(text = "name", sortBy = nameSorter) {
+                                        SortBox(text = "name", sortBy = state.nameSorter) {
                                             viewModel.onNameSortClick()
                                         }
-                                        SortBox(text = "price", sortBy = priceSorter) {
+                                        SortBox(text = "price", sortBy = state.priceSorter) {
                                             viewModel.onPriceSortClick()
                                         }
                                     }
@@ -118,7 +115,7 @@ class StockActivity : ComponentActivity() {
     }
 
     @Composable
-    fun Filter(onTextChange: (String) -> Unit) {
+    private fun Filter(onTextChange: (String) -> Unit) {
         var mutableText by remember { mutableStateOf(TextFieldValue("")) }
         return OutlinedTextField(
             modifier = Modifier
