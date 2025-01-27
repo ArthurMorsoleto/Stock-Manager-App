@@ -46,21 +46,28 @@ class GetProductDetailsUseCaseTest {
     @Test
     fun `when use case is invoked then should return loading response`() = runTest {
         coEvery { repository.getProductDetails(any()) } returns fakeProduct
-        val response = subject.invoke("id").toList().first()
+        val response = subject.invoke("1").toList().first()
         assertTrue(response is Response.Loading)
     }
 
     @Test
     fun `when use case is invoked then should return success response`() = runTest {
         coEvery { repository.getProductDetails(any()) } returns fakeProduct
-        val response = subject.invoke("id").toList().last()
+        val response = subject.invoke("1").toList().last()
         assertTrue(response is Response.Success)
     }
 
     @Test
     fun `when use case is invoked then should return error response`() = runTest {
         coEvery { repository.getProductDetails(any()) } throws Exception("error")
-        val response = subject.invoke("id").toList().last()
+        val response = subject.invoke("1").toList().last()
+        assertTrue(response is Response.Error)
+    }
+
+    @Test
+    fun `when use case is invoked and has no product saved then should return error response`() = runTest {
+        coEvery { repository.getProductDetails(any()) } returns null
+        val response = subject.invoke("1").toList().last()
         assertTrue(response is Response.Error)
     }
 }

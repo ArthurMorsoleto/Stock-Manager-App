@@ -98,7 +98,7 @@ class StockViewModelTest {
     }
 
     @Test
-    fun testFilter()= runTest{
+    fun testFilter() = runTest {
         StockViewModelTestRobot.apply {
             arrange { mockGetProductsSuccess() }
             act {
