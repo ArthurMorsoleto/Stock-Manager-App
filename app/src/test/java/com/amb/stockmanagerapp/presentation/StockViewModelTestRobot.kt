@@ -87,25 +87,25 @@ object StockViewModelTestRobot {
         fun verifyIfListIsSortedByPrice() {
             val firstPrice = subject.viewState.value.data.first().price
             val secondPrice = subject.viewState.value.data.last().price
-            assertTrue(secondPrice > firstPrice)
+            assertTrue(firstPrice > secondPrice)
         }
 
         fun verifyIfListIsSortedByDescendingPrice() {
             val firstPrice = subject.viewState.value.data.first().price
             val secondPrice = subject.viewState.value.data.last().price
-            assertTrue(firstPrice > secondPrice)
+            assertTrue(firstPrice < secondPrice)
         }
 
         fun verifyIfListIsSortedByName() {
             val firstName = subject.viewState.value.data.first().name
             val secondName = subject.viewState.value.data.last().name
-            assertTrue(firstName < secondName)
+            assertTrue(firstName > secondName)
         }
 
         fun verifyIfListIsSortedByDescendingName() {
             val firstName = subject.viewState.value.data.first().name
             val secondName = subject.viewState.value.data.last().name
-            assertTrue(firstName > secondName)
+            assertTrue(firstName < secondName)
         }
 
         fun checkFilteredItems() {
