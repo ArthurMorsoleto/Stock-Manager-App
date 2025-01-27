@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -19,9 +20,10 @@ object StockRepositoryModule {
         localDataSource: ProductsDao
     ): StockRepository {
         return StockRepositoryImpl(
-            remoteDataSource,
-            localDataSource,
-            shouldFetchDataFromRemoteDataSource = false
+            remoteDataSource = remoteDataSource,
+            localDataSource = localDataSource,
+            shouldFetchDataFromRemoteDataSource = false,
+            dispatcher = Dispatchers.IO
         )
     }
 }

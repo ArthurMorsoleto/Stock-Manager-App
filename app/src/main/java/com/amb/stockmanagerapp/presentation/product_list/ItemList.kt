@@ -1,7 +1,6 @@
-package com.amb.stockmanagerapp.presentation
+package com.amb.stockmanagerapp.presentation.product_list
 
-import ShimmerEffect
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardColors
@@ -27,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil3.compose.SubcomposeAsyncImage
 import com.amb.stockmanagerapp.domain.model.Product
+import com.amb.stockmanagerapp.presentation.ui.utils.components.Image
 
 @Composable
-fun ItemList(modifier: Modifier = Modifier, state: StockViewState) {
+fun ItemList(
+    modifier: Modifier = Modifier,
+    state: StockViewState,
+    onItemClick: (Int) -> Unit
+) {
     Box(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {
@@ -50,11 +52,14 @@ fun ItemList(modifier: Modifier = Modifier, state: StockViewState) {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 8.dp)
+                        .clickable(
+                            onClick = { onItemClick.invoke(item.id) }
+                        )
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        ItemImage(item)
+                        Image(item.image, modifier = Modifier.size(150.dp))
                         ItemContent(item)
                     }
                 }
@@ -74,26 +79,6 @@ fun ItemList(modifier: Modifier = Modifier, state: StockViewState) {
 }
 
 @Composable
-private fun ItemImage(item: Product) {
-    SubcomposeAsyncImage(
-        loading = {
-            ShimmerEffect(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Color.LightGray,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-            )
-        },
-        contentDescription = null,
-        modifier = Modifier.size(150.dp),
-        alignment = Alignment.Center,
-        model = item.image
-    )
-}
-
-@Composable
 private fun ItemContent(item: Product) {
     Column(
         modifier = Modifier.padding(16.dp)
@@ -106,7 +91,7 @@ private fun ItemContent(item: Product) {
         Spacer(modifier = Modifier.size(12.dp))
         Text(
             color = Color.Black,
-            text = "$ ${item.price}",
+            text = "$${item.price}",
             textAlign = TextAlign.Start
         )
         Spacer(modifier = Modifier.size(12.dp))
