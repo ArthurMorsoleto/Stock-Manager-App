@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -72,45 +73,18 @@ class StockActivity : ComponentActivity() {
                             Column(
                                 Modifier.padding(innerPadding)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 24.dp),
-                                ) {
-                                    Title(
-                                        modifier = Modifier
-                                            .padding(start = 16.dp)
-                                            .align(Alignment.CenterStart)
-                                    )
-                                    IconButton(
-                                        modifier = Modifier.align(Alignment.BottomEnd),
-                                        onClick = {
-                                            navController.navigate(Screen.ProductEdit.route)
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.AddCircle,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
+                                TitleHeader(navController)
                                 Filter { viewModel.onFilterUpdate(it) }
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.CenterEnd,
-                                ) {
-                                    Row {
-                                        SortBox(text = "name", sortBy = state.nameSorter) {
-                                            viewModel.onNameSortClick()
-                                        }
-                                        SortBox(text = "price", sortBy = state.priceSorter) {
-                                            viewModel.onPriceSortClick()
-                                        }
-                                    }
-                                }
+                                SortOptions(
+                                    state = state,
+                                    onNameSortClick = { viewModel.onNameSortClick() },
+                                    onPriceSortClick = { viewModel.onPriceSortClick() }
+                                )
                                 Spacer(modifier = Modifier.size(16.dp))
                                 ItemList(state = state) { productId ->
-                                    navController.navigate(Screen.ProductDetails.route + "/${productId}")
+                                    navController.navigate(
+                                        route = Screen.ProductDetails.route + "/${productId}"
+                                    )
                                 }
                             }
                         }
@@ -129,16 +103,56 @@ class StockActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Title(modifier: Modifier) {
-        Text(
-            modifier = modifier,
-            text = "Stock",
-            style = TextStyle(
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Normal
+    private fun SortOptions(
+        state: StockViewState,
+        onNameSortClick: () -> Unit,
+        onPriceSortClick: () -> Unit
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            Row {
+                SortBox(text = "name", sortBy = state.nameSorter) {
+                    onNameSortClick.invoke()
+                }
+                SortBox(text = "price", sortBy = state.priceSorter) {
+                    onPriceSortClick.invoke()
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun TitleHeader(navController: NavHostController) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp),
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterStart),
+                text = "Stock",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal
+                )
             )
-        )
+            IconButton(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                onClick = {
+                    navController.navigate(Screen.ProductEdit.route)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AddCircle,
+                    contentDescription = null
+                )
+            }
+        }
     }
 
     @Composable
