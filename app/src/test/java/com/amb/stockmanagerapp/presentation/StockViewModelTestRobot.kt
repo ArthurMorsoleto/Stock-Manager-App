@@ -3,6 +3,7 @@ package com.amb.stockmanagerapp.presentation
 import com.amb.stockmanagerapp.domain.model.Product
 import com.amb.stockmanagerapp.domain.model.Rating
 import com.amb.stockmanagerapp.domain.usecase.GetProductsUseCase
+import com.amb.stockmanagerapp.presentation.product_list.StockViewModel
 import com.amb.stockmanagerapp.utils.Response
 import io.mockk.coEvery
 import io.mockk.mockk
