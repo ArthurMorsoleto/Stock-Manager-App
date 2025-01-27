@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CardColors
@@ -24,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.amb.stockmanagerapp.presentation.ui.utils.components.Image
-
 
 @Composable
 fun ProductDetails(
@@ -52,32 +53,33 @@ fun ProductDetails(
                         )
                     }
                 }
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = it.name,
-                    fontSize = 24.sp
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ElevatedCard(
-                        elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
-                        colors = CardColors(
-                            containerColor = Color.White,
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.LightGray,
-                            disabledContentColor = Color.LightGray
-                        )
-                    ) {
-                        Image(it.image, modifier = Modifier.size(300.dp))
-                    }
-                }
                 Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp)
                 ) {
+                    Text(
+                        text = it.name,
+                        fontSize = 24.sp
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ElevatedCard(
+                            elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
+                            colors = CardColors(
+                                containerColor = Color.White,
+                                contentColor = Color.White,
+                                disabledContainerColor = Color.LightGray,
+                                disabledContentColor = Color.LightGray
+                            )
+                        ) {
+                            Image(it.image, modifier = Modifier.size(300.dp))
+                        }
+                    }
                     Text(text = "Price: $${it.price}")
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(text = it.description)
