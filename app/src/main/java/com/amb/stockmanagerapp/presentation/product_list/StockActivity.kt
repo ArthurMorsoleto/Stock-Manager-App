@@ -142,7 +142,9 @@ class StockActivity : ComponentActivity() {
                 )
             )
             IconButton(
-                modifier = Modifier.align(Alignment.BottomEnd),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(start = 16.dp),
                 onClick = {
                     navController.navigate(Screen.ProductEdit.route)
                 }
