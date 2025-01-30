@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
-    private val useCase: GetProductDetailsUseCase,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val useCase: GetProductDetailsUseCase
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(ProductDetailsViewState())
@@ -25,8 +25,6 @@ class ProductDetailsViewModel @Inject constructor(
     init {
         savedStateHandle.get<String>(Constants.PRODUCT_ID_KEY)?.let { id ->
             getProductsDetails(id)
-        } ?: _viewState.update {
-            it.copy(isLoading = false, error = "error when loading product details")
         }
     }
 
