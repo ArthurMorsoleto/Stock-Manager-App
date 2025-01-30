@@ -1,6 +1,7 @@
 package com.amb.stockmanagerapp.presentation.product_list
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -114,7 +115,25 @@ class StockActivity : ComponentActivity() {
                             }
                             val viewModel = hiltViewModel<ProductDetailsViewModel>()
                             val state = viewModel.viewState.collectAsState().value
-                            ProductEditScreen(navController, mode, state)
+                            ProductEditScreen(
+                                navController = navController,
+                                mode = mode,
+                                state = state,
+                                onSaveClick = {
+                                    Toast.makeText(
+                                        this@StockActivity,
+                                        "TODO - SAVE/UPDATE",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                },
+                                onDeleteClick = {
+                                    Toast.makeText(
+                                        this@StockActivity,
+                                        "TODO - DELETE",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
                         }
                     }
                 }

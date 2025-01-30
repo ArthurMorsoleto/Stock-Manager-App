@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,9 +65,15 @@ enum class ProductEditScreenMode {
 fun ProductEditScreen(
     navController: NavHostController,
     mode: ProductEditScreenMode,
-    state: ProductDetailsViewState
+    state: ProductDetailsViewState,
+    onSaveClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val currentProduct = remember { mutableStateOf(Product()) }
+    if (mode == ProductEditScreenMode.EDIT) {
+        state.data?.let { currentProduct.value = it }
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -77,23 +84,15 @@ fun ProductEditScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Header(navController, mode)
-            if (mode == ProductEditScreenMode.EDIT) {
-                state.data?.let { Form(it) }
-            } else {
-                Form()
-            }
+            Form(currentProduct = currentProduct)
             ProductImage(
-                image = state.data?.image.toString(), mode = mode
+                image = currentProduct.value.image, mode = mode
             ) {
                 Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
             }
-            SaveButton {
-                Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
-            }
+            SaveButton { onSaveClick.invoke() }
             if (mode == ProductEditScreenMode.EDIT) {
-                DeleteButton {
-                    Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
-                }
+                DeleteButton { onDeleteClick.invoke() }
             }
         }
     }
@@ -135,29 +134,33 @@ private fun Header(
 }
 
 @Composable
-private fun Form(data: Product = Product()) {
+private fun Form(
+    currentProduct: MutableState<Product>,
+) {
     InputText(
-        value = data.name,
+        value = currentProduct.value.name,
         label = stringResource(R.string.product_name_label),
         onTextChange = {
-
+            currentProduct.value = currentProduct.value.copy(name = it)
         }
     )
     InputText(
-        value = data.description,
+        value = currentProduct.value.description,
         label = stringResource(R.string.product_description_label),
         onTextChange = {
-
+            currentProduct.value = currentProduct.value.copy(description = it)
         }
     )
     InputText(
-        value = data.price.toString(),
+        value = currentProduct.value.price.toString(),
         label = stringResource(R.string.product_price_label),
         keyboardType = KeyboardType.NumberPassword,
         maxLength = 9,
         transformation = rememberCurrencyVisualTransformation("USD"),
         onTextChange = {
-
+            if (it.isNotEmpty()) {
+                currentProduct.value = currentProduct.value.copy(price = it.toDouble())
+            }
         }
     )
 }
@@ -167,7 +170,7 @@ private fun InputText(
     value: String = "",
     label: String,
     onTextChange: (String) -> Unit,
-    maxLength: Int = 100,
+    maxLength: Int = 999,
     keyboardType: KeyboardType = KeyboardType.Text,
     transformation: VisualTransformation = VisualTransformation.None
 ) {
