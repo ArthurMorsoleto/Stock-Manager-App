@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.amb.stockmanagerapp.R
+import com.amb.stockmanagerapp.domain.model.Product
+import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetailsViewState
 import com.amb.stockmanagerapp.presentation.ui.theme.StockManagerAppTheme
 import com.amb.stockmanagerapp.presentation.ui.utils.components.Image
 import com.amb.stockmanagerapp.presentation.ui.utils.components.rememberCurrencyVisualTransformation
@@ -61,10 +63,10 @@ enum class ProductEditScreenMode {
 @Composable
 fun ProductEditScreen(
     navController: NavHostController,
-    mode: ProductEditScreenMode = ProductEditScreenMode.ADD
+    mode: ProductEditScreenMode,
+    state: ProductDetailsViewState
 ) {
     val context = LocalContext.current
-
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -75,8 +77,14 @@ fun ProductEditScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Header(navController, mode)
-            Form()
-            ProductImage(mode) {
+            if (mode == ProductEditScreenMode.EDIT) {
+                state.data?.let { Form(it) }
+            } else {
+                Form()
+            }
+            ProductImage(
+                image = state.data?.image.toString(), mode = mode
+            ) {
                 Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
             }
             SaveButton {
@@ -127,20 +135,23 @@ private fun Header(
 }
 
 @Composable
-private fun Form() {
+private fun Form(data: Product = Product()) {
     InputText(
+        value = data.name,
         label = stringResource(R.string.product_name_label),
         onTextChange = {
 
         }
     )
     InputText(
+        value = data.description,
         label = stringResource(R.string.product_description_label),
         onTextChange = {
 
         }
     )
     InputText(
+        value = data.price.toString(),
         label = stringResource(R.string.product_price_label),
         keyboardType = KeyboardType.NumberPassword,
         maxLength = 9,
@@ -153,13 +164,14 @@ private fun Form() {
 
 @Composable
 private fun InputText(
+    value: String = "",
     label: String,
     onTextChange: (String) -> Unit,
     maxLength: Int = 100,
     keyboardType: KeyboardType = KeyboardType.Text,
     transformation: VisualTransformation = VisualTransformation.None
 ) {
-    var mutableText by remember { mutableStateOf(TextFieldValue("")) }
+    var mutableText by remember { mutableStateOf(TextFieldValue(value)) }
     return OutlinedTextField(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -180,7 +192,11 @@ private fun InputText(
 }
 
 @Composable
-private fun ProductImage(mode: ProductEditScreenMode, onClick: () -> Unit) {
+private fun ProductImage(
+    image: String,
+    mode: ProductEditScreenMode,
+    onClick: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,8 +228,7 @@ private fun ProductImage(mode: ProductEditScreenMode, onClick: () -> Unit) {
                     )
                 }
             } else {
-                // TODO
-                Image("", modifier = Modifier.size(300.dp))
+                Image(image, modifier = Modifier.size(300.dp))
             }
         }
     }
@@ -253,7 +268,9 @@ fun DeleteButton(onClick: () -> Unit) {
 fun GreetingPreview() {
     StockManagerAppTheme {
         ProductEditScreen(
-            navController = rememberNavController()
+            navController = rememberNavController(),
+            mode = ProductEditScreenMode.ADD,
+            state = ProductDetailsViewState()
         )
     }
 }

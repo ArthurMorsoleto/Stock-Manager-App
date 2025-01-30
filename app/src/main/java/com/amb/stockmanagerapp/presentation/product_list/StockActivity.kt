@@ -41,14 +41,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.amb.stockmanagerapp.presentation.Screen
 import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetails
 import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetailsViewModel
 import com.amb.stockmanagerapp.presentation.product_edit.ProductEditScreen
+import com.amb.stockmanagerapp.presentation.product_edit.ProductEditScreenMode
 import com.amb.stockmanagerapp.presentation.ui.theme.StockManagerAppTheme
+import com.amb.stockmanagerapp.presentation.ui.utils.Constants.PRODUCT_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -88,13 +92,29 @@ class StockActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        composable(route = Screen.ProductDetails.route + "/{productId}") {
+                        composable(route = Screen.ProductDetails.route + "/{$PRODUCT_ID_KEY}") {
                             val viewModel = hiltViewModel<ProductDetailsViewModel>()
                             val state = viewModel.viewState.collectAsState().value
                             ProductDetails(navController, state)
                         }
-                        composable(route = Screen.ProductEdit.route) {
-                            ProductEditScreen(navController)
+                        composable(
+                            route = Screen.ProductEdit.route + "?$PRODUCT_ID_KEY={$PRODUCT_ID_KEY}",
+                            arguments = listOf(
+                                navArgument(PRODUCT_ID_KEY) {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                }
+                            )
+                        ) { content ->
+                            val isEditMode = content.arguments?.getString(PRODUCT_ID_KEY) ?: ""
+                            val mode = if (isEditMode.isNotEmpty()) {
+                                ProductEditScreenMode.EDIT
+                            } else {
+                                ProductEditScreenMode.ADD
+                            }
+                            val viewModel = hiltViewModel<ProductDetailsViewModel>()
+                            val state = viewModel.viewState.collectAsState().value
+                            ProductEditScreen(navController, mode, state)
                         }
                     }
                 }
