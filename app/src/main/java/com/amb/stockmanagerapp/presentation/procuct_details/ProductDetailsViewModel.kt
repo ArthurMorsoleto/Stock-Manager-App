@@ -24,7 +24,9 @@ class ProductDetailsViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<String>(Constants.PRODUCT_ID_KEY)?.let { id ->
-            getProductsDetails(id)
+            if (id.isNotEmpty()) {
+                getProductsDetails(id)
+            }
         }
     }
 
