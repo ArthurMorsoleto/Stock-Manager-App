@@ -5,4 +5,6 @@
     <string name="product_price_label">price</string>
     <string name="new_product_title">New Product</string>
     <string name="edit_product_title">Edit Product</string>
+    <string name="save_button">Save</string>
+    <string name="delete_button">Delete</string>
 </resources>

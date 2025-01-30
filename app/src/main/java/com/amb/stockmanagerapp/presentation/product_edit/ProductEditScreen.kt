@@ -228,7 +228,7 @@ fun SaveButton(onClick: () -> Unit) {
             .padding(horizontal = 24.dp, vertical = 2.dp),
         onClick = { onClick() }
     ) {
-        Text("Save")
+        Text(stringResource(R.string.save_button))
         Spacer(modifier = Modifier.size(4.dp))
         Icon(imageVector = Icons.Default.Done, contentDescription = null)
     }
@@ -242,7 +242,7 @@ fun DeleteButton(onClick: () -> Unit) {
             .padding(horizontal = 24.dp, vertical = 2.dp),
         onClick = { onClick() }
     ) {
-        Text("Delete")
+        Text(stringResource(R.string.delete_button))
         Spacer(modifier = Modifier.size(4.dp))
         Icon(imageVector = Icons.Default.Delete, contentDescription = null)
     }
