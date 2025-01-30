@@ -28,7 +28,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,10 +80,14 @@ fun ProductEditScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Header(navController, mode)
+            // TODO remove double Form
             if (mode == ProductEditScreenMode.EDIT) {
-                state.data?.let { Form(productState = mutableStateOf(it)) }
+                state.data?.let {
+                    currentProduct.value = it
+                    Form(currentProduct.value)
+                }
             } else {
-                Form(currentProduct)
+                Form(currentProduct.value)
             }
             ProductImage(
                 image = currentProduct.value.image, mode = mode
@@ -135,28 +138,26 @@ private fun Header(
 }
 
 @Composable
-private fun Form(
-    productState: MutableState<Product>,
-) {
+private fun Form(product: Product) {
     InputText(
-        value = productState.value.name,
+        value = product.name,
         label = stringResource(R.string.product_name_label),
-        onTextChange = { productState.value = productState.value.copy(name = it) }
+        onTextChange = { product.copy(name = it) }
     )
     InputText(
-        value = productState.value.description,
+        value = product.description,
         label = stringResource(R.string.product_description_label),
-        onTextChange = { productState.value = productState.value.copy(description = it) }
+        onTextChange = { product.copy(description = it) }
     )
     InputText(
-        value = productState.value.price.toString(),
+        value = product.price.toString(),
         label = stringResource(R.string.product_price_label),
         keyboardType = KeyboardType.NumberPassword,
         maxLength = 9,
         transformation = rememberCurrencyVisualTransformation("USD"),
         onTextChange = {
             if (it.isNotEmpty()) {
-                productState.value = productState.value.copy(price = it.toDouble())
+                product.copy(price = it.toDouble())
             }
         }
     )
@@ -171,7 +172,7 @@ private fun InputText(
     keyboardType: KeyboardType = KeyboardType.Text,
     transformation: VisualTransformation = VisualTransformation.None
 ) {
-    var mutableText by remember { mutableStateOf(TextFieldValue(value)) }
+    var mutableText by remember { mutableStateOf(TextFieldValue(value)) } // TODO fix when first data is null
     return OutlinedTextField(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
