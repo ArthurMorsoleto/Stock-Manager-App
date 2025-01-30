@@ -71,9 +71,6 @@ fun ProductEditScreen(
 ) {
     val context = LocalContext.current
     val currentProduct = remember { mutableStateOf(Product()) }
-    if (mode == ProductEditScreenMode.EDIT) {
-        state.data?.let { currentProduct.value = it }
-    }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -84,7 +81,11 @@ fun ProductEditScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Header(navController, mode)
-            Form(currentProduct = currentProduct)
+            if (mode == ProductEditScreenMode.EDIT) {
+                state.data?.let { Form(productState = mutableStateOf(it)) }
+            } else {
+                Form(currentProduct)
+            }
             ProductImage(
                 image = currentProduct.value.image, mode = mode
             ) {
@@ -135,31 +136,27 @@ private fun Header(
 
 @Composable
 private fun Form(
-    currentProduct: MutableState<Product>,
+    productState: MutableState<Product>,
 ) {
     InputText(
-        value = currentProduct.value.name,
+        value = productState.value.name,
         label = stringResource(R.string.product_name_label),
-        onTextChange = {
-            currentProduct.value = currentProduct.value.copy(name = it)
-        }
+        onTextChange = { productState.value = productState.value.copy(name = it) }
     )
     InputText(
-        value = currentProduct.value.description,
+        value = productState.value.description,
         label = stringResource(R.string.product_description_label),
-        onTextChange = {
-            currentProduct.value = currentProduct.value.copy(description = it)
-        }
+        onTextChange = { productState.value = productState.value.copy(description = it) }
     )
     InputText(
-        value = currentProduct.value.price.toString(),
+        value = productState.value.price.toString(),
         label = stringResource(R.string.product_price_label),
         keyboardType = KeyboardType.NumberPassword,
         maxLength = 9,
         transformation = rememberCurrencyVisualTransformation("USD"),
         onTextChange = {
             if (it.isNotEmpty()) {
-                currentProduct.value = currentProduct.value.copy(price = it.toDouble())
+                productState.value = productState.value.copy(price = it.toDouble())
             }
         }
     )
@@ -181,9 +178,7 @@ private fun InputText(
             .fillMaxWidth(),
         value = mutableText,
         label = { Text(text = label) },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = keyboardType,
-        ),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
         onValueChange = {
             if (mutableText.text.length <= maxLength) {
                 mutableText = it
