@@ -52,7 +52,7 @@ object ProductDetailsViewModelRobot {
 
     class Act {
         fun getProductDetails() {
-            subject = ProductDetailsViewModel(useCase, savedStateHandle)
+            subject = ProductDetailsViewModel(savedStateHandle, useCase)
         }
     }
 
