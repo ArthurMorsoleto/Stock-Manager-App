@@ -150,7 +150,7 @@ private fun Form(product: Product) {
         onTextChange = { product.copy(description = it) }
     )
     InputText(
-        value = product.price.toString(),
+        value = if (product.price != 0.0) product.price.toString() else "",
         label = stringResource(R.string.product_price_label),
         keyboardType = KeyboardType.NumberPassword,
         maxLength = 9,
