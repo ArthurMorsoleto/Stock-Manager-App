@@ -115,17 +115,13 @@ class StockActivity : ComponentActivity() {
                             }
                             val viewModel = hiltViewModel<ProductDetailsViewModel>()
                             val state = viewModel.viewState.collectAsState().value
+                            val editState = viewModel.editViewState.collectAsState().value
                             ProductEditScreen(
                                 navController = navController,
                                 mode = mode,
                                 state = state,
-                                onSaveClick = {
-                                    Toast.makeText(
-                                        this@StockActivity,
-                                        "TODO - SAVE/UPDATE",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                },
+                                editState = editState,
+                                onSaveClick = { viewModel.onSaveClick(it) },
                                 onDeleteClick = {
                                     Toast.makeText(
                                         this@StockActivity,

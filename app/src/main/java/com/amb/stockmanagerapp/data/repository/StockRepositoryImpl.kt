@@ -6,6 +6,7 @@ import com.amb.stockmanagerapp.data.dto.mapToProduct
 import com.amb.stockmanagerapp.data.local.ProductsDao
 import com.amb.stockmanagerapp.data.remote.ProductsApi
 import com.amb.stockmanagerapp.di.IODispatcher
+import com.amb.stockmanagerapp.domain.model.Product
 import com.amb.stockmanagerapp.domain.repository.StockRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -32,6 +33,13 @@ class StockRepositoryImpl @Inject constructor(
     override suspend fun getProductDetails(id: Int): ProductResponse? {
         return withContext(dispatcher) {
             localDataSource.getById(id)?.mapToProduct()
+        }
+    }
+
+    override suspend fun saveProduct(product: Product) {
+        withContext(dispatcher) {
+            // TODO create mapper fun to LocalProductResponse
+            // localDataSource.upsert(product)
         }
     }
 }

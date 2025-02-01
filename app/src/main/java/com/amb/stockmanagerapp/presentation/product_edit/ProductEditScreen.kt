@@ -1,5 +1,6 @@
 package com.amb.stockmanagerapp.presentation.product_edit
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,11 +27,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,24 +60,32 @@ import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetailsViewSt
 import com.amb.stockmanagerapp.presentation.ui.theme.StockManagerAppTheme
 import com.amb.stockmanagerapp.presentation.ui.utils.components.Image
 import com.amb.stockmanagerapp.presentation.ui.utils.components.rememberCurrencyVisualTransformation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 enum class ProductEditScreenMode {
     EDIT,
     ADD
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun ProductEditScreen(
     navController: NavHostController,
     mode: ProductEditScreenMode,
     state: ProductDetailsViewState,
-    onSaveClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
+    editState: ProductEditViewState,
+    onSaveClick: (Product) -> Unit = {},
+    onDeleteClick: (Product) -> Unit = {}
 ) {
     val context = LocalContext.current
     val currentProduct = remember { mutableStateOf(Product()) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -84,19 +98,55 @@ fun ProductEditScreen(
             if (mode == ProductEditScreenMode.EDIT) {
                 state.data?.let {
                     currentProduct.value = it
-                    Form(currentProduct.value)
+                    Form(currentProduct)
                 }
             } else {
-                Form(currentProduct.value)
+                Form(currentProduct)
             }
             ProductImage(
                 image = currentProduct.value.image, mode = mode
             ) {
                 Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
             }
-            SaveButton { onSaveClick.invoke() }
+            SaveButton {
+                onSaveClick.invoke(currentProduct.value)
+                handleFormValidation(coroutineScope, editState, snackBarHostState)
+            }
             if (mode == ProductEditScreenMode.EDIT) {
-                DeleteButton { onDeleteClick.invoke() }
+                DeleteButton { onDeleteClick.invoke(currentProduct.value) }
+            }
+        }
+    }
+}
+
+fun handleFormValidation(
+    coroutineScope: CoroutineScope,
+    editState: ProductEditViewState,
+    snackBarHostState: SnackbarHostState
+) {
+    coroutineScope.launch {
+        editState.isNameValid?.let {
+            if (it.not()) {
+                snackBarHostState.showSnackbar(
+                    message = "Product name must not be empty",
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+        editState.isDescriptionValid?.let {
+            if (it.not()) {
+                snackBarHostState.showSnackbar(
+                    message = "Product description must not be empty",
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+        editState.isNameValid?.let {
+            if (it.not()) {
+                snackBarHostState.showSnackbar(
+                    message = "Product price should be greater than zero",
+                    duration = SnackbarDuration.Short
+                )
             }
         }
     }
@@ -138,26 +188,28 @@ private fun Header(
 }
 
 @Composable
-private fun Form(product: Product) {
+private fun Form(product: MutableState<Product>) {
     InputText(
-        value = product.name,
+        value = product.value.name,
         label = stringResource(R.string.product_name_label),
-        onTextChange = { product.copy(name = it) }
+        onTextChange = {
+            product.value = product.value.copy(name = it)
+        }
     )
     InputText(
-        value = product.description,
+        value = product.value.description,
         label = stringResource(R.string.product_description_label),
-        onTextChange = { product.copy(description = it) }
+        onTextChange = { product.value = product.value.copy(description = it) }
     )
     InputText(
-        value = if (product.price != 0.0) product.price.toString() else "",
+        value = if (product.value.price != 0.0) product.value.price.toString() else "",
         label = stringResource(R.string.product_price_label),
         keyboardType = KeyboardType.NumberPassword,
         maxLength = 9,
         transformation = rememberCurrencyVisualTransformation("USD"),
         onTextChange = {
             if (it.isNotEmpty()) {
-                product.copy(price = it.toDouble())
+                product.value = product.value.copy(price = it.toDouble())
             }
         }
     )
@@ -269,7 +321,8 @@ fun GreetingPreview() {
         ProductEditScreen(
             navController = rememberNavController(),
             mode = ProductEditScreenMode.ADD,
-            state = ProductDetailsViewState()
+            state = ProductDetailsViewState(),
+            editState = ProductEditViewState()
         )
     }
 }

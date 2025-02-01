@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.amb.stockmanagerapp.domain.model.Product
 import com.amb.stockmanagerapp.domain.model.Rating
 import com.amb.stockmanagerapp.domain.usecase.GetProductDetailsUseCase
+import com.amb.stockmanagerapp.domain.usecase.SaveProductUseCase
 import com.amb.stockmanagerapp.utils.Response
 import io.mockk.coEvery
 import io.mockk.every
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.flow
 object ProductDetailsViewModelRobot {
     private lateinit var subject: ProductDetailsViewModel
     private val useCase = mockk<GetProductDetailsUseCase>()
+    private val saveUseCase = mockk<SaveProductUseCase>()
     private val savedStateHandle = mockk<SavedStateHandle>()
     private val fakeProduct = Product(
         id = 2,
@@ -52,7 +54,7 @@ object ProductDetailsViewModelRobot {
 
     class Act {
         fun getProductDetails() {
-            subject = ProductDetailsViewModel(savedStateHandle, useCase)
+            subject = ProductDetailsViewModel(savedStateHandle, useCase, saveUseCase)
         }
     }
 
