@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -25,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.amb.stockmanagerapp.presentation.Screen
+import com.amb.stockmanagerapp.presentation.ui.utils.Constants.PRODUCT_ID_KEY
 import com.amb.stockmanagerapp.presentation.ui.utils.components.Image
 
 @Composable
@@ -41,7 +44,9 @@ fun ProductDetails(
                 modifier = Modifier.padding(innerPadding)
             ) {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
                     contentAlignment = Alignment.TopStart
                 ) {
                     IconButton(
@@ -49,6 +54,20 @@ fun ProductDetails(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        onClick = {
+                            val productId = state.data.id
+                            navController.navigate(
+                                route = Screen.ProductEdit.route + "?$PRODUCT_ID_KEY=$productId"
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
                             contentDescription = null
                         )
                     }

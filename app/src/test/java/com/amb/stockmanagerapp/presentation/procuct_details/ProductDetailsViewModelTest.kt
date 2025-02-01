@@ -79,22 +79,4 @@ class ProductDetailsViewModelTest {
             }
         }
     }
-
-    @Test
-    fun `when view model is initialized without saved state then should update view state with error`() {
-        runTest {
-            ProductDetailsViewModelRobot.apply {
-                arrange {
-                    mockSavedStateError()
-                }
-                act {
-                    getProductDetails()
-                    advanceUntilIdle()
-                }
-                assert {
-                    verifyErrorViewStateForSavedState()
-                }
-            }
-        }
-    }
 }

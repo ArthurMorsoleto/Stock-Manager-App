@@ -1,6 +1,7 @@
 package com.amb.stockmanagerapp.presentation.product_list
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,13 +41,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.amb.stockmanagerapp.presentation.Screen
 import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetails
 import com.amb.stockmanagerapp.presentation.procuct_details.ProductDetailsViewModel
+import com.amb.stockmanagerapp.presentation.product_edit.ProductEditScreen
+import com.amb.stockmanagerapp.presentation.product_edit.ProductEditScreenMode
 import com.amb.stockmanagerapp.presentation.ui.theme.StockManagerAppTheme
+import com.amb.stockmanagerapp.presentation.ui.utils.Constants.PRODUCT_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -69,31 +78,58 @@ class StockActivity : ComponentActivity() {
                             Column(
                                 Modifier.padding(innerPadding)
                             ) {
-                                Title()
+                                TitleHeader(navController)
                                 Filter { viewModel.onFilterUpdate(it) }
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.CenterEnd,
-                                ) {
-                                    Row {
-                                        SortBox(text = "name", sortBy = state.nameSorter) {
-                                            viewModel.onNameSortClick()
-                                        }
-                                        SortBox(text = "price", sortBy = state.priceSorter) {
-                                            viewModel.onPriceSortClick()
-                                        }
-                                    }
-                                }
+                                SortOptions(
+                                    state = state,
+                                    onNameSortClick = { viewModel.onNameSortClick() },
+                                    onPriceSortClick = { viewModel.onPriceSortClick() }
+                                )
                                 Spacer(modifier = Modifier.size(16.dp))
                                 ItemList(state = state) { productId ->
-                                    navController.navigate(Screen.ProductDetails.route + "/${productId}")
+                                    navController.navigate(
+                                        route = Screen.ProductDetails.route + "/${productId}"
+                                    )
                                 }
                             }
                         }
-                        composable(route = Screen.ProductDetails.route + "/{productId}") {
+                        composable(route = Screen.ProductDetails.route + "/{$PRODUCT_ID_KEY}") {
                             val viewModel = hiltViewModel<ProductDetailsViewModel>()
                             val state = viewModel.viewState.collectAsState().value
                             ProductDetails(navController, state)
+                        }
+                        composable(
+                            route = Screen.ProductEdit.route + "?$PRODUCT_ID_KEY={$PRODUCT_ID_KEY}",
+                            arguments = listOf(
+                                navArgument(PRODUCT_ID_KEY) {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                }
+                            )
+                        ) { content ->
+                            val isEditMode = content.arguments?.getString(PRODUCT_ID_KEY) ?: ""
+                            val mode = if (isEditMode.isNotEmpty()) {
+                                ProductEditScreenMode.EDIT
+                            } else {
+                                ProductEditScreenMode.ADD
+                            }
+                            val viewModel = hiltViewModel<ProductDetailsViewModel>()
+                            val state = viewModel.viewState.collectAsState().value
+                            val editState = viewModel.editViewState.collectAsState().value
+                            ProductEditScreen(
+                                navController = navController,
+                                mode = mode,
+                                state = state,
+                                editState = editState,
+                                onSaveClick = { viewModel.onSaveClick(it) },
+                                onDeleteClick = {
+                                    Toast.makeText(
+                                        this@StockActivity,
+                                        "TODO - DELETE",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
                         }
                     }
                 }
@@ -102,16 +138,58 @@ class StockActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Title() {
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 24.dp),
-            text = "Stock",
-            style = TextStyle(
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Normal
+    private fun SortOptions(
+        state: StockViewState,
+        onNameSortClick: () -> Unit,
+        onPriceSortClick: () -> Unit
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            Row {
+                SortBox(text = "name", sortBy = state.nameSorter) {
+                    onNameSortClick.invoke()
+                }
+                SortBox(text = "price", sortBy = state.priceSorter) {
+                    onPriceSortClick.invoke()
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun TitleHeader(navController: NavHostController) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp),
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterStart),
+                text = "Stock",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal
+                )
             )
-        )
+            IconButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(start = 16.dp),
+                onClick = {
+                    navController.navigate(Screen.ProductEdit.route)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AddCircle,
+                    contentDescription = null
+                )
+            }
+        }
     }
 
     @Composable
